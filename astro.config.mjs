@@ -1,17 +1,23 @@
 // @ts-check
-import { defineConfig } from "astro/config";
-import mdx from "@astrojs/mdx";
-import sitemap from "@astrojs/sitemap";
+import { defineConfig, fontProviders } from "astro/config";
 
 import cloudflare from "@astrojs/cloudflare";
 
 // https://astro.build/config
 export default defineConfig({
 	site: "https://example.com",
-	integrations: [mdx(), sitemap()],
-	adapter: cloudflare({
-		platformProxy: {
-			enabled: true,
+	adapter: cloudflare(),
+	fonts: [
+		{
+			provider: fontProviders.fontsource(),
+			name: "Patrick Hand",
+			cssVariable: "--font-patrick-hand",
 		},
-	}),
+		{
+			provider: fontProviders.fontsource(),
+			name: "Caveat",
+			cssVariable: "--font-caveat",
+			weights: [500, 700],
+		},
+	],
 });
