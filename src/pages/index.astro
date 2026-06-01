@@ -1,50 +1,343 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{SITE_TITLE}</title>
+		<meta name="description" content={SITE_DESCRIPTION} />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@500;700&display=swap"
+			rel="stylesheet"
+		/>
 	</head>
 	<body>
-		<Header />
 		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to build
-				a personal website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to <a href="https://docs.astro.build/"
-					>read the docs
-				</a> or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out <a
-					href="https://github.com/Charca/astro-blog-template"
-					>astro-blog-template
-				</a> by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+			<header class="intro">
+				<h1>Snare Accents</h1>
+				<p class="tagline">
+					A random one-bar reading exercise for the snare drum.
+				</p>
+				<p class="blurb">
+					In <strong>4/4</strong> time, a single bar holds <strong>16 sixteenth
+					notes</strong> — four per pulse. Each note is either
+					<em>accented</em> (louder) or <em>unaccented</em>, so a bar has
+					<strong>2<sup>16</sup> = 65,536</strong> possible accent patterns. One
+					is drawn at random below. Inspired by the interpretation practice in
+					Ted Reed's <em>Syncopation for the Modern Drummer</em>.
+				</p>
+			</header>
+
+			<section class="paper" aria-label="Generated bar">
+				<details class="info">
+					<summary class="info-btn" aria-label="How to read the bar" title="How to read the bar">?</summary>
+					<div class="info-body">
+						<h2>How to read the bar</h2>
+						<p>
+							The pattern is written in <strong>4/4</strong> time on a
+							five-line staff. The two vertical strokes at the left are the
+							<strong>percussion clef</strong>, and the stacked
+							<strong>4</strong>s are the time signature — four quarter-note
+							beats per bar.
+						</p>
+						<p>
+							Each filled <strong>notehead</strong> is a sixteenth note played
+							on the <strong>snare drum</strong>. They are joined into four
+							<strong>beamed groups</strong> of four — one group per beat — and
+							the double beam marks them as sixteenths.
+						</p>
+						<p>
+							A <strong>&gt;</strong> above a note is an
+							<strong>accent</strong>: play that note louder. Notes without a
+							<strong>&gt;</strong> are played softer. Read left to right,
+							keeping the kick-drum pulse steady as your metronome.
+						</p>
+					</div>
+				</details>
+				<div id="notation"></div>
+			</section>
+
+			<section class="controls">
+				<div class="row">
+					<button id="play" class="btn primary" type="button">Play</button>
+					<button id="generate" class="btn" type="button">Randomize</button>
+					<button id="mute" class="btn active" type="button">Unmute unaccented</button>
+				</div>
+
+				<div class="row tempo" role="group" aria-label="Tempo control">
+					<button class="btn step" type="button" data-bpm="-5">−5</button>
+					<button class="btn step" type="button" data-bpm="-1">−1</button>
+					<div class="bpm">
+						<span id="bpm-value">90</span>
+						<small>BPM</small>
+					</div>
+					<button class="btn step" type="button" data-bpm="1">+1</button>
+					<button class="btn step" type="button" data-bpm="5">+5</button>
+				</div>
+			</section>
 		</main>
-		<Footer />
+
+		<script>
+			import "../scripts/drum.ts";
+		</script>
 	</body>
 </html>
+
+<style is:global>
+	:root {
+		--ink: #1f2430;
+		--paper: #fbf7ec;
+		--accent: #c0432b;
+		--line: #2b2f3a;
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
+	body {
+		margin: 0;
+		min-height: 100vh;
+		font-family: "Patrick Hand", "Comic Sans MS", cursive, system-ui;
+		color: var(--ink);
+		background: #efe7d3;
+		background-image:
+			radial-gradient(circle at 20% 20%, #f6efdc, transparent 60%),
+			radial-gradient(circle at 80% 80%, #f1e8d0, transparent 60%);
+		display: flex;
+		justify-content: center;
+		padding: 2.5rem 1rem 4rem;
+	}
+
+	main {
+		width: 100%;
+		max-width: 960px;
+	}
+
+	.intro {
+		text-align: center;
+		margin-bottom: 2rem;
+	}
+
+	h1 {
+		font-family: "Caveat", cursive;
+		font-size: clamp(2.8rem, 8vw, 4.5rem);
+		margin: 0;
+		letter-spacing: 1px;
+	}
+
+	.tagline {
+		font-size: 1.35rem;
+		margin: 0.2rem 0 1rem;
+		opacity: 0.85;
+	}
+
+	.blurb {
+		max-width: 620px;
+		margin: 0 auto;
+		font-size: 1.15rem;
+		line-height: 1.5;
+	}
+
+	.blurb sup {
+		font-size: 0.7em;
+	}
+
+	.paper {
+		position: relative;
+		background: var(--paper);
+		border: 2px solid var(--line);
+		border-radius: 14px 220px 16px 240px / 220px 14px 240px 16px;
+		box-shadow: 4px 6px 0 rgba(43, 47, 58, 0.18);
+		padding: 1.5rem 1.25rem;
+		margin: 0 auto 2rem;
+	}
+
+	#notation {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	#notation svg {
+		width: 100%;
+		max-width: 820px;
+		height: auto;
+		display: block;
+		margin: 0 auto;
+	}
+
+	/* Hand-drawn notation strokes */
+	.hd-stroke {
+		stroke: var(--line);
+		stroke-width: 1.6;
+		stroke-linecap: round;
+		fill: none;
+	}
+	.hd-stroke.thick {
+		stroke-width: 3;
+	}
+	.hd-stroke.beam {
+		stroke-width: 5;
+	}
+	.hd-notehead {
+		fill: var(--line);
+		stroke: var(--line);
+		stroke-width: 1;
+		transition: fill 0.05s ease;
+	}
+	.hd-notehead.active {
+		fill: var(--accent);
+		stroke: var(--accent);
+	}
+	.hd-text {
+		fill: var(--line);
+		font-family: "Caveat", cursive;
+		text-anchor: middle;
+		dominant-baseline: middle;
+	}
+	.hd-text.time {
+		font-size: 26px;
+		font-weight: 700;
+	}
+	.hd-text.accent {
+		font-size: 24px;
+		font-weight: 700;
+		fill: var(--accent);
+	}
+	.info {
+		position: absolute;
+		top: 0.6rem;
+		right: 0.9rem;
+		z-index: 2;
+	}
+	.info-btn {
+		list-style: none;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.2rem;
+		height: 2.2rem;
+		font-family: "Caveat", cursive;
+		font-size: 1.6rem;
+		font-weight: 700;
+		color: var(--ink);
+		background: var(--paper);
+		border: 2px solid var(--line);
+		border-radius: 60% 40% 55% 45% / 50% 55% 45% 50%;
+		box-shadow: 2px 3px 0 rgba(43, 47, 58, 0.2);
+		cursor: pointer;
+		user-select: none;
+	}
+	.info-btn::-webkit-details-marker {
+		display: none;
+	}
+	.info[open] .info-btn {
+		background: var(--ink);
+		color: var(--paper);
+	}
+	.info-body {
+		position: absolute;
+		top: 2.8rem;
+		right: 0;
+		width: min(90vw, 360px);
+		background: var(--paper);
+		border: 2px solid var(--line);
+		border-radius: 14px 40px 16px 40px / 40px 14px 40px 16px;
+		box-shadow: 4px 6px 0 rgba(43, 47, 58, 0.18);
+		padding: 1rem 1.5rem;
+		text-align: left;
+		font-size: 1.1rem;
+		line-height: 1.5;
+	}
+	.info-body h2 {
+		font-family: "Caveat", cursive;
+		font-size: 2rem;
+		margin: 0 0 0.5rem;
+	}
+	.info-body p {
+		margin: 0.6rem 0;
+	}
+
+	.controls {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1.25rem;
+	}
+
+	.row {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	.btn {
+		font-family: "Patrick Hand", cursive;
+		font-size: 1.25rem;
+		color: var(--ink);
+		background: var(--paper);
+		border: 2px solid var(--line);
+		border-radius: 14px 200px 16px 220px / 200px 14px 220px 16px;
+		padding: 0.5rem 1.4rem;
+		cursor: pointer;
+		box-shadow: 2px 3px 0 rgba(43, 47, 58, 0.2);
+		transition: transform 0.05s ease, box-shadow 0.05s ease;
+	}
+	.btn:hover {
+		transform: translate(-1px, -1px);
+		box-shadow: 3px 4px 0 rgba(43, 47, 58, 0.25);
+	}
+	.btn:active {
+		transform: translate(1px, 2px);
+		box-shadow: 1px 1px 0 rgba(43, 47, 58, 0.2);
+	}
+	.btn.primary {
+		background: var(--accent);
+		color: #fff;
+		border-color: #8c2f1d;
+	}
+	.btn.primary.playing {
+		background: #2f7d4f;
+		border-color: #1f5c38;
+	}
+	.btn.active {
+		background: var(--ink);
+		color: var(--paper);
+	}
+	.btn.step {
+		min-width: 3.2rem;
+		padding: 0.4rem 0.6rem;
+	}
+
+	.tempo {
+		gap: 0.5rem;
+	}
+	.bpm {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		min-width: 5rem;
+		line-height: 1;
+	}
+	.bpm span {
+		font-family: "Caveat", cursive;
+		font-size: 2.6rem;
+		font-weight: 700;
+	}
+	.bpm small {
+		font-size: 0.9rem;
+		letter-spacing: 2px;
+		opacity: 0.7;
+	}
+</style>
+
